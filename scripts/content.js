@@ -10,11 +10,24 @@ const init = () => {
 };
 
 const createActionButton = (container) => {
-  const button = document.createElement("button");
-  button.style =
-    "width: 100px;height: 50px; background-color: #555; border-radius: 7px; border: 1px solid silver;";
+  const button = document.createElement("img");
   button.id = "retro-player-action";
-  button.innerText = "Botão maroto";
-  button.innerHTML = '<img src="player.png"/>';
+  button.alt = "Ative a visualização media player like";
+  button.title = "Ative a visualização media player like";
+  button.width = 35;
+  button.height = 35;
+  button.style = "margin: auto;";
+  button.src =
+    "https://raw.githubusercontent.com/odilonsilva/retro-media-visualizer/refs/heads/main/player.png";
   container.lastElementChild.appendChild(button);
+  button.addEventListener("click", () => createVisualizer());
+};
+
+const createVisualizer = () => {
+  const container = document.querySelector("body");
+  const visualizer = document.createElement("div");
+  visualizer.id = "retro-media-visualizer";
+  visualizer.style =
+    "position:absolute; top: 0; left: 0; bottom:0; width: 100vw; height: 100vh; background-color: #fff5";
+  container.appendChild(visualizer);
 };
