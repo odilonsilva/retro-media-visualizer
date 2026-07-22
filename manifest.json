@@ -5,16 +5,19 @@
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
-    "default_icon": "player.png"
+    "default_icon": "images/player.png"
   },
   "content_scripts": [
     {
       "js": ["scripts/content.js"],
-      "matches": [
-        "https://open.spotify.com/*",
-        "https://developer.chrome.com/docs/extensions/*",
-        "https://developer.chrome.com/docs/webstore/*"
-      ]
+      "matches": ["https://open.spotify.com/*"],
+      "css": ["css/style.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["images/player.png", "images/media-preview.png"],
+      "matches": ["<all_urls>"]
     }
   ]
 }
