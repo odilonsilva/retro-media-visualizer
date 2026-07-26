@@ -1,9 +1,12 @@
 console.log("content loaded");
-let playing = false;
 let isOpened = false;
 let isFullscreen = false;
 let showingInfoInterval = null;
 let mouseTimer = null;
+let visualizer = null;
+let visualizerVideo = null;
+let fullScreenButton = null;
+let exitFullScreenButton = null;
 
 const interval = setInterval(() => init(), 1000);
 
@@ -32,21 +35,19 @@ const createActionButton = (container) => {
 
 const createVisualizer = () => {
   const container = document.querySelector("body");
-  const visualizer = document.createElement("div");
+  visualizer = document.createElement("div");
   visualizer.id = "retro-media-visualizer";
 
-  const visualizerContent = document.createElement("video");
-  visualizerContent.id = "visualizer-content";
-  visualizerContent.src = chrome.runtime.getURL("clip-test.mp4");
-  // visualizerContent.autoplay = true;
-  visualizerContent.loop = true;
-  visualizer.appendChild(visualizerContent);
+  visualizerVideo = document.createElement("video");
+  visualizerVideo.id = "visualizer-content";
+  visualizerVideo.src = chrome.runtime.getURL("clip-test.mp4");
+  visualizerVideo.loop = true;
+  visualizer.appendChild(visualizerVideo);
   container.appendChild(visualizer);
   visualizerInfo();
 };
 
 const visualizerInfo = () => {
-  const container = document.querySelector("#retro-media-visualizer");
   const visualizerInfoContainer = `
   <div class="controls show">
     <div class="info-container-top">
@@ -67,17 +68,15 @@ const visualizerInfo = () => {
     </div>
   </div>
   `;
-  container.innerHTML += visualizerInfoContainer;
+  visualizer.innerHTML += visualizerInfoContainer;
 
   const closeButton = document.querySelector("#close-button");
   closeButton.addEventListener("click", () => closeVisualizer());
 
-  const fullScreenButton = document.querySelector(
-    "#retro-media-visualizer-action",
-  );
+  fullScreenButton = document.querySelector("#retro-media-visualizer-action");
   fullScreenButton.addEventListener("click", () => handleFullScreen());
 
-  const exitFullScreenButton = document.querySelector(
+  exitFullScreenButton = document.querySelector(
     "#retro-media-visualizer-action-exit",
   );
   exitFullScreenButton.addEventListener("click", () => handleFullScreen());
@@ -93,12 +92,10 @@ const updateVisualizerInfo = () => {
   visualizerInfo.innerHTML = playingInfo.innerHTML;
 };
 
-const openVisualizer = () => {
-  const visualizer = document.querySelector("#retro-media-visualizer");
-
+const openVisualizer = async () => {
   if (visualizer) {
     const visualizerContent = document.querySelector("#visualizer-content");
-    visualizerContent.play();
+    await visualizerContent.play();
 
     visualizer.classList.remove("visualizer-exit");
     visualizer.classList.add("visualizer-enter");
@@ -107,15 +104,13 @@ const openVisualizer = () => {
   }
 };
 
-const closeVisualizer = () => {
-  const visualizer = document.querySelector("#retro-media-visualizer");
+const closeVisualizer = async () => {
   visualizer.classList.add("visualizer-exit");
   visualizer.classList.remove("visualizer-enter");
-  // setTimeout(() => visualizer.classList.remove("visualizer-enter"), 550);
   isOpened = false;
   clearInterval(showingInfoInterval);
   const visualizerContent = document.querySelector("#visualizer-content");
-  visualizerContent.pause();
+  await visualizerContent.pause();
   exitFullscreen();
 };
 
@@ -141,12 +136,6 @@ const handleFullScreen = () => {
       exitFullscreen();
       return;
     }
-    const fullScreenButton = document.querySelector(
-      "#retro-media-visualizer-action",
-    );
-    const exitFullScreenButton = document.querySelector(
-      "#retro-media-visualizer-action-exit",
-    );
 
     fullScreenButton.classList.add("hide");
     fullScreenButton.classList.remove("show");
@@ -162,13 +151,6 @@ const handleFullScreen = () => {
 
 const exitFullscreen = () => {
   if (isFullscreen) {
-    const fullScreenButton = document.querySelector(
-      "#retro-media-visualizer-action",
-    );
-    const exitFullScreenButton = document.querySelector(
-      "#retro-media-visualizer-action-exit",
-    );
-
     fullScreenButton.classList.add("show");
     fullScreenButton.classList.remove("hide");
 
@@ -197,6 +179,5 @@ const handleMouse = (event) => {
   mouseTimer = setTimeout(() => {
     overlayControls.classList.remove("show");
     overlayControls.classList.add("hide");
-    return;
   }, 4000);
 };
