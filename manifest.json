@@ -16,7 +16,11 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["images/player.png", "images/media-preview.png"],
+      "resources": [
+        "images/player.png",
+        "images/media-preview.png",
+        "clip-test.mp4"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

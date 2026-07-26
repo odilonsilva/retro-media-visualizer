@@ -14,7 +14,7 @@
   background-color: #070707ec;
   opacity: 0;
   z-index: -10;
-  transition: opacity 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 #retro-media-visualizer.visualizer-enter {
@@ -23,15 +23,67 @@
 }
 #retro-media-visualizer.visualizer-exit {
   opacity: 0;
-  z-index: -10;
 }
 
-#retro-media-visualizer-info {
-  position: fixed;
-  width: 100vw;
+#retro-media-visualizer-action,
+#retro-media-visualizer-action-exit {
+  align-self: center;
   display: flex;
+}
+
+#close-button,
+img#retro-player-action,
+#retro-media-visualizer-action,
+#retro-media-visualizer-action-exit {
+  cursor: pointer;
+}
+
+#retro-media-visualizer-action.show,
+#retro-media-visualizer-action-exit.show {
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.5s ease;
+}
+
+#retro-media-visualizer-action.hide,
+#retro-media-visualizer-action-exit.hide {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.5s ease;
+}
+
+#retro-media-visualizer-action.show svg,
+#retro-media-visualizer-action-exit.show svg {
+  width: 32px;
+  height: 32px;
+}
+
+#retro-media-visualizer-action.hide svg,
+#retro-media-visualizer-action-exit.hide svg {
+  width: 0;
+  height: 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.info-container-top {
+  top: 0;
+  width: 100vw;
+  padding: 20px;
+  position: fixed;
+  display: flex;
+  justify-content: end;
+}
+
+.info-container {
+  width: 100vw;
   bottom: 0;
+  padding: 20px;
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
   backdrop-filter: blur(5px);
   background: #00000081;
-  padding: 20px;
 }
