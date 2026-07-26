@@ -64,6 +64,18 @@ img#retro-player-action,
   height: 0;
 }
 
+.controls {
+  transition: opacity 0.5s ease;
+}
+
+.controls.show {
+  opacity: 1;
+}
+
+.controls.hide {
+  opacity: 0;
+}
+
 .flex {
   display: flex;
 }

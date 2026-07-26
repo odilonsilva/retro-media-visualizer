@@ -3,6 +3,7 @@ let playing = false;
 let isOpened = false;
 let isFullscreen = false;
 let showingInfoInterval = null;
+let mouseTimer = null;
 
 const interval = setInterval(() => init(), 1000);
 
@@ -15,6 +16,7 @@ const init = () => {
     createVisualizer();
     clearInterval(interval);
     window.addEventListener("keypress", (event) => handleKeyboard(event));
+    document.addEventListener("mousemove", (event) => handleMouse(event));
   }
 };
 
@@ -46,19 +48,21 @@ const createVisualizer = () => {
 const visualizerInfo = () => {
   const container = document.querySelector("#retro-media-visualizer");
   const visualizerInfoContainer = `
-  <div class="info-container-top">
-    <div id="close-button" title="[V] Fechar visualização">
-      <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.207 6.207a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793z" fill="#b0b0b0"></path></g></svg> 
-    </div>
-  </div>
-  <div class="flex info-container">
-    <div id="retro-media-visualizer-info" class="flex"></div>
-    <div class="flex">
-      <div id="retro-media-visualizer-action" title="[F] Enter Fullscreen">
-        <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M9.00002 3.99998H4.00004L4 9M20 8.99999V4L15 3.99997M15 20H20L20 15M4 15L4 20L9.00002 20" stroke="#b0b0b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+  <div class="controls show">
+    <div class="info-container-top">
+      <div id="close-button" title="[V] Fechar visualização">
+        <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.207 6.207a1 1 0 0 0-1.414-1.414L12 10.586 6.207 4.793a1 1 0 0 0-1.414 1.414L10.586 12l-5.793 5.793a1 1 0 1 0 1.414 1.414L12 13.414l5.793 5.793a1 1 0 0 0 1.414-1.414L13.414 12l5.793-5.793z" fill="#b0b0b0"></path></g></svg> 
       </div>
-      <div id="retro-media-visualizer-action-exit" class="hide" title="[F] Exit Fullscreen">
-        <svg width="32px" height="32px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="2"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><polyline points="48 36 36 36 36 48"></polyline><rect x="8" y="8" width="48" height="48"></rect><line x1="36" y1="36" x2="48" y2="48"></line><polyline points="16 28 28 28 28 16"></polyline><line x1="28" y1="28" x2="16" y2="16"></line></g></svg>
+    </div>
+    <div class="flex info-container">
+      <div id="retro-media-visualizer-info" class="flex"></div>
+      <div class="flex">
+        <div id="retro-media-visualizer-action" title="[F] Enter Fullscreen">
+          <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M9.00002 3.99998H4.00004L4 9M20 8.99999V4L15 3.99997M15 20H20L20 15M4 15L4 20L9.00002 20" stroke="#b0b0b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+        </div>
+        <div id="retro-media-visualizer-action-exit" class="hide" title="[F] Exit Fullscreen">
+          <svg width="32px" height="32px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="2"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><polyline points="48 36 36 36 36 48"></polyline><rect x="8" y="8" width="48" height="48"></rect><line x1="36" y1="36" x2="48" y2="48"></line><polyline points="16 28 28 28 28 16"></polyline><line x1="28" y1="28" x2="16" y2="16"></line></g></svg>
+        </div>
       </div>
     </div>
   </div>
@@ -106,7 +110,8 @@ const openVisualizer = () => {
 const closeVisualizer = () => {
   const visualizer = document.querySelector("#retro-media-visualizer");
   visualizer.classList.add("visualizer-exit");
-  setTimeout(() => visualizer.classList.remove("visualizer-enter"), 550);
+  visualizer.classList.remove("visualizer-enter");
+  // setTimeout(() => visualizer.classList.remove("visualizer-enter"), 550);
   isOpened = false;
   clearInterval(showingInfoInterval);
   const visualizerContent = document.querySelector("#visualizer-content");
@@ -175,4 +180,23 @@ const exitFullscreen = () => {
     }
     isFullscreen = false;
   }
+};
+
+const handleMouse = (event) => {
+  if (!isOpened) return;
+
+  const overlayControls = document.querySelector(
+    "#retro-media-visualizer > div.controls",
+  );
+
+  clearTimeout(mouseTimer);
+
+  overlayControls.classList.remove("hide");
+  overlayControls.classList.add("show");
+
+  mouseTimer = setTimeout(() => {
+    overlayControls.classList.remove("show");
+    overlayControls.classList.add("hide");
+    return;
+  }, 4000);
 };
