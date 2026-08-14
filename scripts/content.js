@@ -4,7 +4,6 @@ let isFullscreen = false;
 let showingInfoInterval = null;
 let mouseTimer = null;
 let visualizer = null;
-let visualizerVideo = null;
 let fullScreenButton = null;
 let exitFullScreenButton = null;
 
@@ -15,11 +14,13 @@ const init = () => {
   console.log("tentando encontrar a navbar do spotify");
   if (navBarSpotify) {
     console.log("navBarSpotify localizada");
+    clearInterval(interval);
     createActionButton(navBarSpotify);
     createVisualizer();
-    clearInterval(interval);
     window.addEventListener("keypress", (event) => handleKeyboard(event));
-    document.addEventListener("mousemove", (event) => handleMouse(event));
+    window.addEventListener("resize", () => resizeVisualizer());
+    window.addEventListener("mousemove", (event) => handleMouse(event));
+    resizeVisualizer();
   }
 };
 
@@ -38,11 +39,23 @@ const createVisualizer = () => {
   visualizer = document.createElement("div");
   visualizer.id = "retro-media-visualizer";
 
-  visualizerVideo = document.createElement("video");
-  visualizerVideo.id = "visualizer-content";
-  visualizerVideo.src = chrome.runtime.getURL("clip-test.mp4");
-  visualizerVideo.loop = true;
-  visualizer.appendChild(visualizerVideo);
+  const randomNum = parseInt(Math.random() * 11) + 1;
+  const videoUrl = chrome.runtime.getURL(`images/${randomNum}.mp4`);
+
+  const overlayVideo = document.createElement("video");
+  overlayVideo.classList.add("overlay-video-show");
+  overlayVideo.id = "overlay-video";
+  overlayVideo.src = videoUrl;
+  overlayVideo.loop = true;
+
+  const overlayVideo1 = document.createElement("video");
+  overlayVideo1.classList.add("overlay-video-hide");
+  overlayVideo1.id = "overlay-video-1";
+  overlayVideo1.src = videoUrl;
+  overlayVideo1.loop = true;
+
+  visualizer.appendChild(overlayVideo);
+  visualizer.appendChild(overlayVideo1);
   container.appendChild(visualizer);
   visualizerInfo();
 };
@@ -94,13 +107,16 @@ const updateVisualizerInfo = () => {
 
 const openVisualizer = async () => {
   if (visualizer) {
-    const visualizerContent = document.querySelector("#visualizer-content");
-    await visualizerContent.play();
+    const overlayVideo = document.querySelector("#overlay-video");
+    await overlayVideo.play();
+    const overlayVideo1 = document.querySelector("#overlay-video-1");
+    await overlayVideo1.play();
 
     visualizer.classList.remove("visualizer-exit");
     visualizer.classList.add("visualizer-enter");
     isOpened = true;
     showingInfoInterval = setInterval(() => updateVisualizerInfo(), 1000);
+    setVisualizerInterval();
   }
 };
 
@@ -109,8 +125,11 @@ const closeVisualizer = async () => {
   visualizer.classList.remove("visualizer-enter");
   isOpened = false;
   clearInterval(showingInfoInterval);
-  const visualizerContent = document.querySelector("#visualizer-content");
-  await visualizerContent.pause();
+  clearInterval(visualizerInterval);
+  const overlayVideo = document.querySelector("#overlay-video");
+  await overlayVideo.pause();
+  const overlayVideo1 = document.querySelector("#overlay-video-1");
+  await overlayVideo1.pause();
   exitFullscreen();
 };
 
@@ -179,5 +198,5 @@ const handleMouse = (event) => {
   mouseTimer = setTimeout(() => {
     overlayControls.classList.remove("show");
     overlayControls.classList.add("hide");
-  }, 4000);
+  }, 7000);
 };

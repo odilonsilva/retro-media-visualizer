@@ -64,15 +64,25 @@ img#retro-player-action,
   height: 0;
 }
 
-.controls {
+#overlay-video,
+#overlay-video-1 {
+  position: fixed;
+  top: 0;
   transition: opacity 0.5s ease;
 }
 
-.controls.show {
+.controls {
+  transition: opacity 0.5s ease;
+  z-index: 10;
+}
+
+.controls.show,
+.overlay-video-show {
   opacity: 1;
 }
 
-.controls.hide {
+.controls.hide,
+.overlay-video-hide {
   opacity: 0;
 }
 

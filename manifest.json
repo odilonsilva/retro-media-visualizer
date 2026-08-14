@@ -9,19 +9,15 @@
   },
   "content_scripts": [
     {
-      "js": ["scripts/content.js"],
+      "js": ["scripts/content.js", "scripts/visualizer-controller.js"],
       "matches": ["https://open.spotify.com/*"],
       "css": ["css/style.css"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "images/player.png",
-        "images/media-preview.png",
-        "clip-test.mp4"
-      ],
-      "matches": ["<all_urls>"]
+      "resources": ["images/*"],
+      "matches": ["https://open.spotify.com/*"]
     }
   ]
 }
