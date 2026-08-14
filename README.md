@@ -1,4 +1,4 @@
-# Retro Media Visualizer
+# <img src="images/player.png" width="45"  style="margin-bottom: -12px "/> Retro Media Visualizer
 
 This project is a chrome extension that bring the nostalgic windows media player visualizations to your spotify.
 
