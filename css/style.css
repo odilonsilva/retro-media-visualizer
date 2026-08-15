@@ -109,3 +109,36 @@ img#retro-player-action,
   backdrop-filter: blur(5px);
   background: #00000081;
 }
+
+#retro-player-action.yt-music {
+  margin-left: 10px;
+}
+
+.yt-music .info-container-top,
+.yt-music .info-container {
+  padding: 20px 0;
+}
+
+.yt-music #close-button,
+.yt-music #fullscreen-action {
+  margin-right: 20px;
+}
+
+.yt-music #retro-media-visualizer-info {
+  margin-left: 20px;
+}
+
+.yt-music .song-container {
+  margin-left: 10px;
+  color: silver;
+  font-size: large;
+}
+
+.yt-music .song-title {
+  color: white;
+}
+
+.yt-music .song-subtitle a {
+  color: silver !important;
+  cursor: inherit;
+}

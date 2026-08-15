@@ -7,15 +7,28 @@ let visualizer = null;
 let fullScreenButton = null;
 let exitFullScreenButton = null;
 
+const PLATFORM_SPOTIFY = "spotify";
+const PLATFORM_YOUTUBE_MUSIC = "yt-music";
+let platform;
+
 const interval = setInterval(() => init(), 1000);
 
 const init = () => {
   const navBarSpotify = document.querySelector("#global-nav-bar");
-  console.log("tentando encontrar a navbar do spotify");
-  if (navBarSpotify) {
-    console.log("navBarSpotify localizada");
+  const navBarYTMusic = document.querySelector("ytmusic-nav-bar");
+  console.log("tentando encontrar a navbar");
+  if (navBarSpotify || navBarYTMusic) {
     clearInterval(interval);
-    createActionButton(navBarSpotify);
+
+    if (navBarSpotify) {
+      platform = PLATFORM_SPOTIFY;
+      createActionButton(navBarSpotify);
+    } else {
+      platform = PLATFORM_YOUTUBE_MUSIC;
+      createActionButton(navBarYTMusic);
+    }
+    console.log(`navbar do ${platform} localizada`);
+
     createVisualizer();
     window.addEventListener("keypress", (event) => handleKeyboard(event));
     window.addEventListener("resize", () => resizeVisualizer());
@@ -30,6 +43,7 @@ const createActionButton = (container) => {
   button.alt = "Ativar visualização media player";
   button.title = "Ativar visualização media player";
   button.src = chrome.runtime.getURL("images/player.png");
+  button.classList.add(platform);
   container.lastElementChild.appendChild(button);
   button.addEventListener("click", () => openVisualizer());
 };
@@ -38,6 +52,7 @@ const createVisualizer = () => {
   const container = document.querySelector("body");
   visualizer = document.createElement("div");
   visualizer.id = "retro-media-visualizer";
+  visualizer.classList.add(platform);
 
   const randomNum = parseInt(Math.random() * 11) + 1;
   const videoUrl = chrome.runtime.getURL(`images/${randomNum}.mp4`);
@@ -70,7 +85,7 @@ const visualizerInfo = () => {
     </div>
     <div class="flex info-container">
       <div id="retro-media-visualizer-info" class="flex"></div>
-      <div class="flex">
+      <div id="fullscreen-action" class="flex">
         <div id="retro-media-visualizer-action" title="[F] Enter Fullscreen">
           <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M9.00002 3.99998H4.00004L4 9M20 8.99999V4L15 3.99997M15 20H20L20 15M4 15L4 20L9.00002 20" stroke="#b0b0b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
         </div>
@@ -97,12 +112,38 @@ const visualizerInfo = () => {
 
 const updateVisualizerInfo = () => {
   const visualizerInfo = document.querySelector("#retro-media-visualizer-info");
-  const playingInfo = document.querySelector(
-    "[data-testid=now-playing-widget]",
-  );
-  if (!visualizerInfo || !playingInfo) return;
+  let playingInfo;
 
-  visualizerInfo.innerHTML = playingInfo.innerHTML;
+  if (!visualizerInfo) return;
+
+  if (platform == PLATFORM_SPOTIFY) {
+    playingInfo = document.querySelector("[data-testid=now-playing-widget]");
+
+    if (!playingInfo) return;
+
+    visualizerInfo.innerHTML = playingInfo.innerHTML;
+  } else {
+    const thumb = document.querySelector(
+      ".thumbnail-image-wrapper.style-scope.ytmusic-player-bar",
+    );
+    const title = document.querySelector(
+      ".title.style-scope.ytmusic-player-bar",
+    );
+    const subtitle = document.querySelector(
+      ".byline.style-scope.ytmusic-player-bar.complex-string",
+    );
+
+    if (!thumb || !title || !subtitle) return;
+
+    const ytPlayInfo =
+      thumb.innerHTML +
+      `<div class="song-container">
+        <div class="song-title">${title.innerHTML}</div>
+        <div class="song-subtitle">${subtitle.innerHTML}</dv>
+      </div>`;
+
+    visualizerInfo.innerHTML = ytPlayInfo;
+  }
 };
 
 const openVisualizer = async () => {
