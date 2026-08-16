@@ -1,0 +1,1 @@
+cp -r images/ css/ scripts/ index.html manifest.json player.ico dist/
